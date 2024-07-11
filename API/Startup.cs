@@ -26,6 +26,7 @@ public class Startup
             options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
         });
         services.AddControllers();
+        services.AddCors();
        
     }
 
@@ -38,6 +39,7 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
