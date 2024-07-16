@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using API.Data;
+using API.Interfaces;
+using API.Services;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using API.Extensions;
 
 public class Startup
 {
@@ -21,12 +28,10 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<DataContext>(options =>
-        {
-            options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-        });
+        services.AddApplicationServices(_config);
         services.AddControllers();
         services.AddCors();
+        services.AddIdentityServices(_config); 
        
     }
 
@@ -40,6 +45,8 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+        
+        app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
